@@ -9,6 +9,8 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+  this.inputManager.on("autoplay", this.autoplay.bind(this));
+  this.inputManager.on("step", this.step.bind(this));
 
   this.setup();
 }
@@ -57,8 +59,8 @@ GameManager.prototype.setup = function () {
   // Update the actuator
   this.actuate();
 
-  // Auto-play the game
-  this.autoplay();
+  this.auto = false;
+  this.playing = false;
 };
 
 var valueToRank = {
@@ -67,8 +69,24 @@ var valueToRank = {
   65536: 'G',
 };
 
-// Auto-play the game after getting suggested move from 2048-AI
 GameManager.prototype.autoplay = function () {
+  if (!this.auto && !this.playing) {
+    this.auto = true;
+    this.playing = true;
+    this.play();
+  }
+};
+
+GameManager.prototype.step = function () {
+  this.auto = false;
+  if (!this.playing) {
+    this.playing = true;
+    this.play();
+  }
+};
+
+// Play the game after getting suggested move from 2048-AI
+GameManager.prototype.play = function () {
   var board = '';
   for (var y = 0; y < this.grid.size; y++) {
     for (var x = 0; x < this.grid.size; x++) {
@@ -96,8 +114,11 @@ GameManager.prototype.autoplay = function () {
         }
         if (!dead) {
           self.actuate();
-          self.autoplay();
+          if (self.auto) {
+            self.play();
+          }
         }
+        self.playing = false;
       } else {
         console.error(request.statusText);
       }

@@ -66,12 +66,22 @@ KeyboardInputManager.prototype.listen = function () {
     if (!modifiers && event.which === 82) {
       self.restart.call(self, event);
     }
+    // Enter key auto-play the game
+    if (!modifiers && event.which === 13) {
+      self.autoplay.call(self, event);
+    }
+    // Space key auto-steps the game
+    if (!modifiers && event.which === 32) {
+      self.step.call(self, event);
+    }
   });
 
   // Respond to button presses
   this.bindButtonPress(".retry-button", this.restart);
   this.bindButtonPress(".restart-button", this.restart);
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
+  this.bindButtonPress(".autoplay-button", this.autoplay);
+  this.bindButtonPress(".step-button", this.step);
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -135,6 +145,16 @@ KeyboardInputManager.prototype.restart = function (event) {
 KeyboardInputManager.prototype.keepPlaying = function (event) {
   event.preventDefault();
   this.emit("keepPlaying");
+};
+
+KeyboardInputManager.prototype.autoplay = function (event) {
+  event.preventDefault();
+  this.emit("autoplay");
+};
+
+KeyboardInputManager.prototype.step = function (event) {
+  event.preventDefault();
+  this.emit("step");
 };
 
 KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
