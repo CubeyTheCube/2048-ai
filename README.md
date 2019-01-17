@@ -1,4 +1,11 @@
-# 2048
+# 2048-clone
+
+This 2048 clone means to demonstrate the strength of [2048 AI](https://github.com/macroxue/2048-ai) with auto-play.
+The clone and the AI act as client and server, where the clone contacts the AI for move suggestions and auto-plays
+the moves until the game ends. See [2048 AI](https://github.com/macroxue/2048-ai) for more details.
+
+## 2048
+
 A small clone of [1024](https://play.google.com/store/apps/details?id=com.veewo.a1024), based on [Saming's 2048](http://saming.fr/p/2048/) (also a clone).
 
 Made just for fun. [Play it here!](http://gabrielecirulli.github.io/2048/)

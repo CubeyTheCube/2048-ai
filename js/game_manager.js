@@ -56,6 +56,57 @@ GameManager.prototype.setup = function () {
 
   // Update the actuator
   this.actuate();
+
+  // Auto-play the game
+  this.autoplay();
+};
+
+var valueToRank = {
+  0: '0', 2: '1', 4: '2', 8: '3', 16: '4', 32: '5', 64: '6', 128: '7', 256: '8',
+  512: '9', 1024: 'A', 2048: 'B', 4096: 'C', 8192: 'D', 16384: 'E', 32768: 'F',
+  65536: 'G',
+};
+
+// Auto-play the game after getting suggested move from 2048-AI
+GameManager.prototype.autoplay = function () {
+  var board = '';
+  for (var y = 0; y < this.grid.size; y++) {
+    for (var x = 0; x < this.grid.size; x++) {
+      if (this.grid.cells[x][y]) {
+        board += valueToRank[this.grid.cells[x][y].value];
+      } else {
+        board += '0';
+      }
+    }
+  }
+
+  var self = this;
+  var request = new XMLHttpRequest();
+  request.open("GET", "http://localhost:8080/move?board=" + board);
+  request.onload = function() {
+    if (request.readyState === 4) {
+      if (request.status === 200) {
+        var dead = false;
+        switch (request.responseText) {
+          case 'u': self.move(0); break;
+          case 'r': self.move(1); break;
+          case 'd': self.move(2); break;
+          case 'l': self.move(3); break;
+          default: dead = true; break;
+        }
+        if (!dead) {
+          self.actuate();
+          self.autoplay();
+        }
+      } else {
+        console.error(request.statusText);
+      }
+    }
+  };
+  request.onerror = function (e) {
+    console.error(request.statusText);
+  };
+  request.send(null);
 };
 
 // Set up the initial tiles to start the game with
@@ -165,9 +216,6 @@ GameManager.prototype.move = function (direction) {
 
           // Update the score
           self.score += merged.value;
-
-          // The mighty 2048 tile
-          if (merged.value === 2048) self.won = true;
         } else {
           self.moveTile(tile, positions.farthest);
         }
