@@ -117,6 +117,8 @@ GameManager.prototype.play = function () {
           if (self.auto) {
             self.play();
           }
+        } else {
+          self.auto = false;
         }
         self.playing = false;
       } else {
@@ -125,6 +127,8 @@ GameManager.prototype.play = function () {
     }
   };
   request.onerror = function (e) {
+    self.auto = false;
+    self.playing = false;
     console.error(request.statusText);
   };
   request.send(null);
