@@ -82,6 +82,7 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
   this.bindButtonPress(".autoplay-button", this.autoplay);
   this.bindButtonPress(".step-button", this.step);
+  this.bindButtonPress(".config-button", this.config);
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -155,6 +156,11 @@ KeyboardInputManager.prototype.autoplay = function (event) {
 KeyboardInputManager.prototype.step = function (event) {
   event.preventDefault();
   this.emit("step");
+};
+
+KeyboardInputManager.prototype.config = function (event) {
+  event.preventDefault();
+  this.emit("config");
 };
 
 KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {

@@ -11,6 +11,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
   this.inputManager.on("autoplay", this.autoplay.bind(this));
   this.inputManager.on("step", this.step.bind(this));
+  this.inputManager.on("config", this.config.bind(this));
 
   this.setup();
 }
@@ -52,8 +53,24 @@ GameManager.prototype.setup = function () {
     this.won         = false;
     this.keepPlaying = false;
 
-    // Add the initial tiles
-    this.addStartTiles();
+    if (this.initialConfig != null && this.initialConfig.length > 0) {
+      var index = 0;
+      for (var row = 0; row < this.size; row++) {
+        for (var col = 0; col < this.size; col++) {
+          var value = 0;
+          if (index < this.initialConfig.length) {
+            value = this.initialConfig[index];
+            index++;
+          }
+          if (value > 0) {
+            this.grid.insertTile(new Tile({x: col, y: row}, value));
+          }
+        }
+      }
+    } else {
+      // Add the initial tiles
+      this.addStartTiles();
+    }
   }
 
   // Update the actuator
@@ -132,6 +149,36 @@ GameManager.prototype.play = function () {
     console.error(request.statusText);
   };
   request.send(null);
+};
+
+// Config the initial layout of tiles.
+GameManager.prototype.config = function () {
+  var tileSet = new Set([0,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]);
+  var config = this.initialConfig;
+  if (config == null) {
+    config = "16384,8192,1024,2,4096,2048,512,2,256,128,64,2,2,2,2,2";
+  }
+
+  var str = prompt("Enter initial tiles: ", config);
+  if (str.length == 0) {
+    this.initialConfig = null;
+    this.restart();
+    return;
+  }
+
+  var tiles = str.split(',').map(Number);
+  var valid = true;
+  for (var i = 0; i < tiles.length; ++i) {
+    if (!tileSet.has(tiles[i])) {
+      alert("Invalid tile: " + tile[i]);
+      valid = false;
+      break;
+    }
+  }
+  if (valid) {
+    this.initialConfig = tiles;
+    this.restart();
+  }
 };
 
 // Set up the initial tiles to start the game with
