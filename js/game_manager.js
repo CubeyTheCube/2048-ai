@@ -53,13 +53,13 @@ GameManager.prototype.setup = function () {
     this.won         = false;
     this.keepPlaying = false;
 
-    if (this.initialConfig != null && this.initialConfig.length > 0) {
+    if (this.initialTiles != null && this.initialTiles.length > 0) {
       var index = 0;
       for (var row = 0; row < this.size; row++) {
         for (var col = 0; col < this.size; col++) {
           var value = 0;
-          if (index < this.initialConfig.length) {
-            value = this.initialConfig[index];
+          if (index < this.initialTiles.length) {
+            value = this.initialTiles[index];
             index++;
           }
           if (value > 0) {
@@ -79,6 +79,10 @@ GameManager.prototype.setup = function () {
   this.auto = false;
   this.playing = false;
 };
+
+var globalGameManager = null;
+
+var defaultServerAddress = "http://localhost:8080";
 
 var valueToRank = {
   0: '0', 2: '1', 4: '2', 8: '3', 16: '4', 32: '5', 64: '6', 128: '7', 256: '8',
@@ -115,12 +119,17 @@ GameManager.prototype.play = function () {
     }
   }
 
+  if (this.serverAddress == null) {
+    this.serverAddress = defaultServerAddress;
+  }
   var self = this;
   var request = new XMLHttpRequest();
-  request.open("GET", "http://localhost:8080/move?board=" + board);
+  var url = this.serverAddress + "/move?board=" + board;
+  request.open("GET", url);
   request.onload = function() {
     if (request.readyState === 4) {
       if (request.status === 200) {
+        self.hideError();
         var dead = false;
         switch (request.responseText) {
           case 'u': self.move(0); break;
@@ -146,38 +155,116 @@ GameManager.prototype.play = function () {
   request.onerror = function (e) {
     self.auto = false;
     self.playing = false;
-    console.error(request.statusText);
+    self.showError("Unable to contact AI at <strong>" + self.serverAddress + "</strong>");
   };
   request.send(null);
 };
 
-// Config the initial layout of tiles.
+GameManager.prototype.showError = function (message) {
+  document.getElementById("game-intro").style.display = "none";
+  document.getElementById("error-message").innerHTML = message;
+  document.getElementById("error-message").style.display = "block";
+}
+
+GameManager.prototype.hideError = function () {
+  document.getElementById("game-intro").style.display = "block";
+  document.getElementById("error-message").style.display = "none";
+}
+
+GameManager.prototype.acceptConfig = function () {
+  var self = globalGameManager;
+  self.configTiles();
+  self.configServer();
+  self.closeConfig();
+};
+
+GameManager.prototype.closeConfig = function () {
+  var self = globalGameManager;
+  var config = document.getElementById("config-dialog");
+  config.style.display = "none";
+  self.inputManager.resumeListen();
+  document.removeEventListener("keydown", this.handleKeys);
+};
+
+GameManager.prototype.handleKeys = function (event) {
+  var self = globalGameManager;
+
+  var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
+    event.shiftKey;
+
+  // Esc key closes config dialog
+  if (!modifiers && event.which === 27) {
+    self.closeConfig();
+  }
+
+  // Enter key accepts config changes
+  if (!modifiers && event.which === 13) {
+    self.acceptConfig();
+  }
+};
+
+// Config game options
 GameManager.prototype.config = function () {
-  var tileSet = new Set([0,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768]);
-  var config = this.initialConfig;
-  if (config == null) {
-    config = "16384,8192,1024,2,4096,2048,512,2,256,128,64,2,2,2,2,2";
+  var tiles = this.initialTiles;
+  if (tiles == null) {
+    tiles = [16384,8192,4096,256,2048,1024,512,128,2,0,0,0,0,0,0,0];
+  }
+  var tileGrid = document.getElementsByClassName("tile-input");
+  for (var i = 0; i < this.size * this.size; i++) {
+    tileGrid[i].value = tiles[i];
   }
 
-  var str = prompt("Enter initial tiles: ", config);
-  if (str.length == 0) {
-    this.initialConfig = null;
-    this.restart();
-    return;
+  var server = this.serverAddress;
+  if (server == null) {
+    server = defaultServerAddress;
   }
+  document.getElementById("server-address").value = server;
 
-  var tiles = str.split(',').map(Number);
+  globalGameManager = this;
+  document.addEventListener("keydown", this.handleKeys);
+  this.inputManager.stopListen();
+
+  var self = this;
+  var config = document.getElementById("config-dialog");
+  config.style.display = "block";
+  tileGrid[0].focus();
+
+  var ok = document.getElementById("ok-button");
+  ok.onclick = this.acceptConfig;
+
+  var close = document.getElementById("close-button");
+  close.onclick = this.closeConfig;
+};
+
+// Config the initial layout of tiles
+GameManager.prototype.configTiles = function () {
+  var tileSet = new Set([0,2,4,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768,65536]);
+  var tileGrid = document.getElementsByClassName("tile-input");
+  var tiles = [];
   var valid = true;
-  for (var i = 0; i < tiles.length; ++i) {
-    if (!tileSet.has(tiles[i])) {
-      alert("Invalid tile: " + tile[i]);
+  for (var i = 0; i < this.size * this.size; ++i) {
+    var tile = Number(tileGrid[i].value);
+    if (tileSet.has(tile)) {
+      tiles.push(tile);
+    } else {
+      alert("Invalid tile: " + tileGrid[i].value);
       valid = false;
       break;
     }
   }
   if (valid) {
-    this.initialConfig = tiles;
-    this.restart();
+    this.initialTiles = tiles;
+  }
+};
+
+// Config the address of AI server
+GameManager.prototype.configServer = function () {
+  var address = document.getElementById("server-address").value;
+  try {
+    new URL(address);
+    this.serverAddress = address;
+  } catch (_) {
+    alert("Malformed address: " + address);
   }
 };
 

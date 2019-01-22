@@ -513,9 +513,57 @@ hr {
   clear: both; }
 
 .game-intro {
+  display: block;
   float: left;
   line-height: 42px;
   margin-bottom: 0; }
+
+.error-message {
+  display: none;
+  float: left;
+  line-height: 42px;
+  margin-bottom: 0; }
+
+.config-dialog {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4); }
+
+.config-content {
+  border-radius: 6px;
+  background-color: #f9f6f2;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 400px; }
+
+.tile-input {
+  padding: 2px;
+  box-sizing: border-box;
+  width: 95px; }
+
+.server-input {
+  padding: 2px;
+  box-sizing: border-box;
+  width: 395px; }
+
+.dialog-button {
+  color: #aaa;
+  float: right;
+  font-weight: bold; }
+
+.dialog-button:hover,
+.dialog-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer; }
 
 .autoplay-button {
   display: inline-block;

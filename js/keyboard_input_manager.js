@@ -31,9 +31,10 @@ KeyboardInputManager.prototype.emit = function (event, data) {
   }
 };
 
-KeyboardInputManager.prototype.listen = function () {
-  var self = this;
+var globalInputManager = null;
 
+KeyboardInputManager.prototype.handleKeys = function (event) {
+  var self = globalInputManager;
   var map = {
     38: 0, // Up
     39: 1, // Right
@@ -49,32 +50,45 @@ KeyboardInputManager.prototype.listen = function () {
     65: 3  // A
   };
 
+  var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
+    event.shiftKey;
+  var mapped    = map[event.which];
+
+  if (!modifiers) {
+    if (mapped !== undefined) {
+      event.preventDefault();
+      self.emit("move", mapped);
+    }
+  }
+
+  // R key restarts the game
+  if (!modifiers && event.which === 82) {
+    self.restart.call(self, event);
+  }
+  // Enter key auto-play the game
+  if (!modifiers && event.which === 13) {
+    self.autoplay.call(self, event);
+  }
+  // Space key auto-steps the game
+  if (!modifiers && event.which === 32) {
+    self.step.call(self, event);
+  }
+};
+
+KeyboardInputManager.prototype.resumeListen = function () {
+  document.addEventListener("keydown", this.handleKeys);
+};
+
+KeyboardInputManager.prototype.stopListen = function () {
+  document.removeEventListener("keydown", this.handleKeys);
+};
+
+KeyboardInputManager.prototype.listen = function () {
+  var self = this;
+
   // Respond to direction keys
-  document.addEventListener("keydown", function (event) {
-    var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
-                    event.shiftKey;
-    var mapped    = map[event.which];
-
-    if (!modifiers) {
-      if (mapped !== undefined) {
-        event.preventDefault();
-        self.emit("move", mapped);
-      }
-    }
-
-    // R key restarts the game
-    if (!modifiers && event.which === 82) {
-      self.restart.call(self, event);
-    }
-    // Enter key auto-play the game
-    if (!modifiers && event.which === 13) {
-      self.autoplay.call(self, event);
-    }
-    // Space key auto-steps the game
-    if (!modifiers && event.which === 32) {
-      self.step.call(self, event);
-    }
-  });
+  globalInputManager = this;
+  this.resumeListen();
 
   // Respond to button presses
   this.bindButtonPress(".retry-button", this.restart);

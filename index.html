@@ -27,7 +27,8 @@
     </div>
 
     <div class="above-game">
-      <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+      <span class="game-intro" id="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></span>
+      <span class="error-message" id="error-message">&nbsp;</span>
     </div>
 
     <div class="above-game">
@@ -37,6 +38,43 @@
       &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
       <a class="config-button">Config</a>
       <a class="restart-button">New Game</a>
+    </div>
+
+    <div id="config-dialog" class="config-dialog">
+      <div class="config-content">
+        <span class="dialog-button" id="ok-button">&nbsp;&nbsp;&#10004;</span>
+        <span class="dialog-button" id="close-button">&#10008;&nbsp;&nbsp;</span>
+        <p>Initial tiles:</p>
+          <table>
+            <tr>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+            </tr>
+            <tr>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+            </tr>
+            <tr>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+            </tr>
+            <tr>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+              <td><input class="tile-input"></input></td>
+            </tr>
+          </table>
+        <p></p>
+        <p>AI server:</p>
+        <input class="server-input" id="server-address"></input>
+      </div>
     </div>
 
     <div class="game-container">
