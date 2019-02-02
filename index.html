@@ -45,32 +45,43 @@
         <span class="dialog-button" id="ok-button">&nbsp;&nbsp;&#10004;</span>
         <span class="dialog-button" id="close-button">&#10008;&nbsp;&nbsp;</span>
         <p>Initial tiles:</p>
-          <table>
-            <tr>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-            </tr>
-            <tr>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-            </tr>
-            <tr>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-            </tr>
-            <tr>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-              <td><input class="tile-input"></input></td>
-            </tr>
-          </table>
+        <table>
+          <tr>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+          </tr>
+          <tr>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+          </tr>
+          <tr>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+          </tr>
+          <tr>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+            <td><input class="tile-input"></input></td>
+          </tr>
+        </table>
+        <p></p>
+        <p>Training:</p>
+        <select id='training' onclick='selectTraining()' onchange='selectTraining()'>
+          <option value="snake-32k">Snake Chain for 32768, 78% success</option>
+          <option value="snake-64k">Snake Chain for 65536, 13% success</option>
+          <option value="pdf-32k">Perimeter Defense for 32768, 82% success</option>
+          <option value="pdf-64k">Perimeter Defense for 65536, 19% success</option>
+          <option value="dpdf-32k">Double Perimeter Defense for 32768, 79% success</option>
+          <option value="dpdf-64k">Double Perimeter Defense for 65536, 11% success</option>
+          <option value="clear">Clear board</option>
+        </select>
         <p></p>
         <p>AI server:</p>
         <input class="server-input" id="server-address"></input>

@@ -55,6 +55,7 @@ GameManager.prototype.setup = function () {
 
     if (this.initialTiles != null && this.initialTiles.length > 0) {
       var index = 0;
+      var numTiles = 0;
       for (var row = 0; row < this.size; row++) {
         for (var col = 0; col < this.size; col++) {
           var value = 0;
@@ -64,8 +65,12 @@ GameManager.prototype.setup = function () {
           }
           if (value > 0) {
             this.grid.insertTile(new Tile({x: col, y: row}, value));
+            ++numTiles;
           }
         }
+      }
+      if (numTiles == 0) {
+        this.addStartTiles();
       }
     } else {
       // Add the initial tiles
@@ -202,6 +207,30 @@ GameManager.prototype.handleKeys = function (event) {
     self.acceptConfig();
   }
 };
+
+function selectTraining() {
+  var training = document.getElementById('training').value;
+  var tiles;
+  if (training == 'clear') {
+    tiles = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  } else if (training == 'snake-32k') {
+    tiles = [16384,8192,4096,256,2048,1024,512,128,2,0,0,0,0,0,0,0];
+  } else if (training == 'snake-64k') {
+    tiles = [32768,16384,8192,512,4096,2048,1024,256,2,0,0,0,0,0,0,0];
+  } else if (training == 'pdf-32k') {
+    tiles = [16384,8192,4096,2,2048,1024,512,2,256,128,4,2,2,2,2,2];
+  } else if (training == 'pdf-64k') {
+    tiles = [32768,16384,8192,2,4096,2048,1024,2,512,256,4,2,2,2,2,2];
+  } else if (training == 'dpdf-32k') {
+    tiles = [16384,8192,4096,4,2048,1024,512,2,2,0,0,0,0,0,0,0];
+  } else if (training == 'dpdf-64k') {
+    tiles = [32768,16384,8192,4,4096,2048,1024,2,2,0,0,0,0,0,0,0];
+  }
+  var tileGrid = document.getElementsByClassName("tile-input");
+  for (var i = 0; i < 16; i++) {
+    tileGrid[i].value = tiles[i];
+  }
+}
 
 // Config game options
 GameManager.prototype.config = function () {
